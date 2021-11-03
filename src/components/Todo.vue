@@ -6,14 +6,15 @@
     <router-link to="/active" replace>Active</router-link> |
     <router-link to="/done" replace>Done</router-link> |
     <!-- 輸入事項框 -->
-    <div class="top-input">
+    <div class="top-content">
       <input
+        class="top-input"
         type="text"
         placeholder="請輸入新事項"
         v-model.trim="newInput"
         @keyup.enter="addItem()"
       />
-      <button @click="addItem()">新增</button>
+      <button class="top-button" @click="addItem()">新增</button>
     </div>
     <ul class="content">
       <!-- 顯示模式/編輯模式 -->
@@ -34,10 +35,10 @@
             <button @click="edit = index">編輯</button>
             <button @click="deleteTodo(item)">刪除</button>
             <div class="sort-button" v-if="$route.name == 'all'">
-              <button @click="upRecord({ item, index })">
+              <button @click="upItem({ item, index })">
                 <i class="fas fa-chevron-up"></i>
               </button>
-              <button @click="downRecord({ item, index })">
+              <button @click="downItem({ item, index })">
                 <i class="fas fa-chevron-down"></i>
               </button>
             </div>
@@ -67,16 +68,9 @@ export default {
   data() {
     return {
       newInput: "",
-      // all,active,done
-      filter: this.$route.name,
       // 是否編輯
       edit: null,
     };
-  },
-  watch: {
-    $route(newVal) {
-      this.filter = newVal.name;
-    },
   },
   computed: {
     ...mapState(["todos"]),
@@ -119,6 +113,19 @@ export default {
       this.updateTodo(value);
       this.edit = null;
     },
+    // 先做判斷，再丟payload
+    upItem(value) {
+      if (value.index <= 0) {
+        return;
+      }
+      this.upRecord(value);
+    },
+    downItem(value) {
+      if (value.index >= this.todos.length - 1) {
+        return;
+      }
+      this.downRecord(value);
+    },
   },
   created() {
     this.readTodos();
@@ -144,105 +151,105 @@ h1 {
   text-decoration: line-through;
   color: grey;
 }
+a {
+  color: #3e517a;
+  text-decoration: none;
+}
+.router-link-exact-active {
+  color: #0b5a8c;
+  font-weight: bold;
+}
 .todo {
   margin-top: 30px;
   padding: 10px;
   width: 400px;
   border-radius: 10px;
   background-color: #70cad1;
-  a {
+}
+.top-content {
+  margin: 5px auto;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #8ee3f5;
+}
+.top-input {
+  width: 85%;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: #8ee3f5;
+}
+.top-button {
+  width: 15%;
+  padding: 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #3e517a;
+  background-color: #8ee3f5;
+  &:hover {
+    color: #8ee3f5;
+    background-color: #3e517a;
+  }
+  &:active {
     color: #3e517a;
-    text-decoration: none;
+    background-color: #8ee3f5;
   }
-  .router-link-exact-active {
-    color: #0b5a8c;
-    font-weight: bold;
+}
+.content {
+  margin: 0 auto;
+  button:active {
+    transform: scale(1.3);
   }
-  .top-input {
-    margin: 5px auto;
+
+  li {
+    margin: 5px 0;
+    padding: 5px 0;
     border-radius: 3px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #8ee3f5;
-    input {
-      width: 85%;
-      padding: 10px;
-      border-radius: 3px;
-      background-color: #8ee3f5;
-    }
-    button {
-      width: 15%;
-      padding: 10px;
-      border-radius: 3px;
-      cursor: pointer;
+  }
+}
+.input {
+  width: 150px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  input {
+    padding: 5px 5px;
+    margin: 0 5px;
+  }
+}
+.button {
+  display: flex;
+  button {
+    height: 33px;
+    cursor: pointer;
+    padding: 0 3px;
+    margin-right: 3px;
+    border-radius: 3px;
+    color: #8ee3f5;
+    background-color: #3e517a;
+    &:hover {
       color: #3e517a;
-      background-color: #8ee3f5;
-      &:hover {
-        color: #8ee3f5;
-        background-color: #3e517a;
-      }
-      &:active {
-        color: #3e517a;
-        background-color: #8ee3f5;
-      }
+      background-color: #caf9ed;
     }
   }
-  .content {
-    margin: 0 auto;
-    button:active {
-      transform: scale(1.3);
+}
+.sort-button {
+  // float: right;
+  display: flex;
+  flex-direction: column;
+  button {
+    height: 15px;
+    &:first-child {
+      margin-bottom: 3px;
     }
-
-    li {
-      margin: 5px 0;
-      padding: 5px 0;
-      border-radius: 3px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #8ee3f5;
-      .input {
-        width: 150px;
-        display: flex;
-        justify-content: start;
-        align-items: center;
-        input {
-          padding: 5px 5px;
-          margin: 0 5px;
-        }
-      }
-    }
-    .button {
-      display: flex;
-      button {
-        height: 33px;
-        cursor: pointer;
-        padding: 0 3px;
-        margin-right: 3px;
-        border-radius: 3px;
-        color: #8ee3f5;
-        background-color: #3e517a;
-        &:hover {
-          color: #3e517a;
-          background-color: #caf9ed;
-        }
-      }
-      .sort-button {
-        // float: right;
-        display: flex;
-        flex-direction: column;
-        button {
-          height: 15px;
-          &:first-child {
-            margin-bottom: 3px;
-          }
-        }
-        i {
-          transform: scale(0.8, 0.8);
-        }
-      }
-    }
+  }
+  i {
+    transform: scale(0.8, 0.8);
   }
 }
 </style>
