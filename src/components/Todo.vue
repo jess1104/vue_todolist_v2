@@ -26,19 +26,19 @@
             <input
               type="checkbox"
               :checked="item.done"
-              @change="checkTodo(item)"
+              @change="checkData({ id: item.id })"
               :id="item.id"
             />
             <label :for="item.id">{{ item.content }}</label>
           </div>
           <div class="button">
             <button @click="edit = index">編輯</button>
-            <button @click="deleteTodo(item)">刪除</button>
+            <button @click="deleteData({ id: item.id })">刪除</button>
             <div class="sort-button" v-if="$route.name == 'all'">
-              <button @click="upItem({ item, index })">
+              <button @click="upItem(index)">
                 <i class="fas fa-chevron-up"></i>
               </button>
-              <button @click="downItem({ item, index })">
+              <button @click="downItem(index)">
                 <i class="fas fa-chevron-down"></i>
               </button>
             </div>
@@ -51,7 +51,9 @@
           </div>
           <div class="button">
             <button @click="edit = null">取消</button>
-            <button @click="updateTodoDone(item)">
+            <button
+              @click="updateTodoDone({ id: item.id, content: item.content })"
+            >
               確定
             </button>
           </div>
@@ -91,11 +93,11 @@ export default {
   },
   methods: {
     ...mapActions([
-      "deleteTodo",
+      "deleteData",
       "createData",
-      "updateTodo",
+      "updateData",
       "readTodos",
-      "checkTodo",
+      "checkData",
       "upRecord",
       "downRecord",
     ]),
@@ -109,22 +111,22 @@ export default {
         this.newInput = "";
       }
     },
-    updateTodoDone(value) {
-      this.updateTodo(value);
+    updateTodoDone({ id, content }) {
+      this.updateData({ id, content });
       this.edit = null;
     },
     // 先做判斷，再丟payload
-    upItem(value) {
-      if (value.index <= 0) {
+    upItem(index) {
+      if (index <= 0) {
         return;
       }
-      this.upRecord(value);
+      this.upRecord(index);
     },
-    downItem(value) {
-      if (value.index >= this.todos.length - 1) {
+    downItem(index) {
+      if (index >= this.todos.length - 1) {
         return;
       }
-      this.downRecord(value);
+      this.downRecord(index);
     },
   },
   created() {
